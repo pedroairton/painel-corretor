@@ -2,6 +2,7 @@ import { Collapse, Select } from "antd";
 import "./Home.scss";
 import {
   Building,
+  Check,
   ChevronDown,
   Pencil,
   Phone,
@@ -9,6 +10,7 @@ import {
   Plus,
   Search,
   Trash,
+  X,
 } from "lucide-react";
 
 export const Home = () => {
@@ -124,51 +126,6 @@ export const Home = () => {
           </div>
         </div>
         <div className="tabela">
-          {/* <table>
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Renda</th>
-                <th>Status</th>
-                <th>Prioridade</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div className="cliente">
-                    <h3>Nome do cliente</h3>
-                    <span>(81) 99999-9999 - 2 ligações</span>
-                  </div>
-                </td>
-                <td>R$ 3.000</td>
-                <td>Muito interessado</td>
-                <td>
-                  <div className="stars">
-                    <span>⭐⭐⭐⭐⭐</span>
-                  </div>
-                </td>
-                <td>
-                  <div className="acoes">
-                    <button className="btn-ligar">
-                      <PhoneCall strokeWidth={1.5} />
-                      Ligação
-                    </button>
-                    <button className="btn-editar">
-                      <Pencil strokeWidth={1.5} />
-                    </button>
-                    <button className="btn-excluir">
-                      <Trash strokeWidth={1.5} />
-                    </button>
-                    <button className="detalhes">
-                      <ChevronDown strokeWidth={1.5} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table> */}
           <div className="grid">
             <div className="topo-grid">
               <div className="linha">
@@ -184,7 +141,7 @@ export const Home = () => {
                 <div className="linha">
                   <div className="cliente">
                     <h3>Nome do cliente</h3>
-                    <span>(81) 99999-9999 - 2 ligações</span>
+                    <span>(81) 99999-9999 · 2 ligações</span>
                   </div>
                   <span>R$ 3.000</span>
                   <span>Muito interessado</span>
@@ -206,7 +163,37 @@ export const Home = () => {
                   </div>
                 </div>
                 <div className="linha-detalhes">
-                  <p className="observacoes"><b>Observações:</b> Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                  <div className="outras-infos">
+                    <h4>Outras informações</h4>
+                    <p className="necessidades">
+                      <b>Necessidades:</b> Lorem ipsum dolor sit amet
+                      consectetur adipisicing elit.
+                    </p>
+                    <div className="itens">
+                      <div className="item">
+                        <span className="label-item">Imóvel?</span>
+                        <div className="checkbox">
+                          <Check size={20} strokeWidth={4} color="green"/>
+                        </div>
+                      </div>
+                      <div className="item">
+                        <span className="label-item">Casado?</span>
+                        <div className="checkbox">
+                          <Check size={20} strokeWidth={4} color="green"/>
+                        </div>
+                      </div>
+                      <div className="item">
+                        <span className="label-item">Filhos?</span>
+                        <div className="checkbox">
+                          <X size={20} strokeWidth={4} color="red"/>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="observacoes">
+                      <b>Observações:</b> Lorem ipsum dolor sit amet consectetur
+                      adipisicing elit.
+                    </p>
+                  </div>
                   <div className="historico">
                     <h4>Histórico de contato</h4>
                     <div className="contatos">
@@ -214,10 +201,17 @@ export const Home = () => {
                         <div className="topo-contato">
                           <Phone size={20} />
                           <span className="data-contato">01/08/2026</span>
-                          <span className="resultado-contato">· Agendou visita</span>
-                          <span className="status-interesse">Muito interessado</span> 
+                          <span className="resultado-contato">
+                            · Agendou visita
+                          </span>
+                          <span className="status-interesse">
+                            Muito interessado
+                          </span>
                         </div>
-                        <p className="feedback-contato">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                        <p className="feedback-contato">
+                          Lorem ipsum dolor sit amet consectetur adipisicing
+                          elit.
+                        </p>
                       </div>
                     </div>
                   </div>
