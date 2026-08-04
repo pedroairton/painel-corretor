@@ -1,26 +1,41 @@
 import "./App.scss";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, redirect, RouterProvider } from "react-router-dom";
 import { Home } from "./pages/Home/Home";
 import { Login } from "./pages/Login/Login";
-import { Header } from "./components/Header/Header";
+import { Layout } from "./components/Layout/Layout";
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/login",
-      element: <Login></Login>,
+      element: <Login/>,
     },
     {
-      path: "/home",
-      element: <Home></Home>,
+      path: "/",
+      element: <Layout/>,
+      loader: async () => {
+        // temporario
+        const isAuth = true
+        if(!isAuth){
+          return redirect('/login')
+        }
+        return null
+      },
+      children: [
+        {
+          index: true,
+          element: <Navigate to="/home" replace={true}></Navigate>,
+        },
+        {
+          path: "/home",
+          element: <Home></Home>,
+        },
+      ],
     },
   ]);
   return (
     <>
-      <Header></Header>
-      <div className="content">
-        <RouterProvider router={router} />
-      </div>
+      <RouterProvider router={router} />
     </>
   );
 }
