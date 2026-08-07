@@ -1,4 +1,4 @@
-import { Collapse, Select } from "antd";
+import { Select } from "antd";
 import "./Home.scss";
 import {
   Building,
@@ -12,14 +12,34 @@ import {
   Trash,
   X,
 } from "lucide-react";
+import { apiService } from "../../services/api.service";
+import { useEffect, useState } from "react";
+import type { Client } from "../../models/client.model";
+import { ClientModal } from "../modal/ClientModal/ClientModal";
 
 export const Home = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalEditMode, setModalEditMode] = useState(false);
   const handleStatusChange = (value: string) => {
     console.log(`selected ${value}`);
   };
   const handleOrdemChange = (value: string) => {
     console.log(`selected ${value}`);
   };
+
+  const [clients, setClients] = useState([]);
+  const loadClients = async (params?: any) => {
+    try {
+      const response = await apiService.getClients(params);
+      console.log(response);
+      setClients(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    loadClients();
+  }, []);
   return (
     <>
       <article className="page-home">
@@ -34,7 +54,13 @@ export const Home = () => {
               interesse.
             </p>
           </div>
-          <button className="btn-novo-cliente">
+          <button
+            className="btn-novo-cliente"
+            onClick={() => {
+              setModalEditMode(false);
+              setIsModalOpen(true);
+            }}
+          >
             <Plus strokeWidth={1.5} /> Novo Cliente
           </button>
         </div>
@@ -137,89 +163,104 @@ export const Home = () => {
               </div>
             </div>
             <div className="itens-grid">
-              <div className="item-grid">
-                <div className="linha">
-                  <div className="cliente">
-                    <h3>Nome do cliente</h3>
-                    <span>(81) 99999-9999 · 2 ligações</span>
+              {clients.map((client: Client) => (
+                <div className="item-grid">
+                  <div className="linha">
+                    <div className="cliente">
+                      <h3>{client.name}</h3>
+                      <span>{client.phone} · 2 ligações</span>
+                    </div>
+                    <span>R$ {client.income.toLocaleString("pt-BR")}</span>
+                    <span>{client.interest_status.label}</span>
+                    <span>⭐⭐⭐⭐⭐</span>
+                    <div className="acoes">
+                      <button className="btn-ligar" onClick={() => {
+                        setModalEditMode(true);
+                        setIsModalOpen(true);
+                      }}>
+                        <PhoneCall strokeWidth={1.5} />
+                        Contato
+                      </button>
+                      <button className="btn-editar">
+                        <Pencil strokeWidth={1.5} />
+                      </button>
+                      <button className="btn-excluir">
+                        <Trash strokeWidth={1.5} />
+                      </button>
+                      <button className="detalhes" aria-label="Expand">
+                        <ChevronDown strokeWidth={1.5} />
+                      </button>
+                    </div>
                   </div>
-                  <span>R$ 3.000</span>
-                  <span>Muito interessado</span>
-                  <span>⭐⭐⭐⭐⭐</span>
-                  <div className="acoes">
-                    <button className="btn-ligar">
-                      <PhoneCall strokeWidth={1.5} />
-                      Ligação
-                    </button>
-                    <button className="btn-editar">
-                      <Pencil strokeWidth={1.5} />
-                    </button>
-                    <button className="btn-excluir">
-                      <Trash strokeWidth={1.5} />
-                    </button>
-                    <button className="detalhes" aria-label="Expand">
-                      <ChevronDown strokeWidth={1.5} />
-                    </button>
-                  </div>
-                </div>
-                <div className="linha-detalhes">
-                  <div className="outras-infos">
-                    <h4>Outras informações</h4>
-                    <p className="necessidades">
-                      <b>Necessidades:</b> Lorem ipsum dolor sit amet
-                      consectetur adipisicing elit.
-                    </p>
-                    <div className="itens">
-                      <div className="item">
-                        <span className="label-item">Imóvel?</span>
-                        <div className="checkbox">
-                          <Check size={20} strokeWidth={4} color="green"/>
+                  <div className="linha-detalhes">
+                    <div className="outras-infos">
+                      <h4>Outras informações</h4>
+                      <p className="necessidades">
+                        <b>Necessidades:</b> Lorem ipsum dolor sit amet
+                        consectetur adipisicing elit.
+                      </p>
+                      <div className="itens">
+                        <div className="item">
+                          <span className="label-item">Imóvel?</span>
+                          <div className="checkbox">
+                            <Check size={20} strokeWidth={4} color="green" />
+                          </div>
+                        </div>
+                        <div className="item">
+                          <span className="label-item">Casado?</span>
+                          <div className="checkbox">
+                            <Check size={20} strokeWidth={4} color="green" />
+                          </div>
+                        </div>
+                        <div className="item">
+                          <span className="label-item">Filhos?</span>
+                          <div className="checkbox">
+                            <X size={20} strokeWidth={4} color="red" />
+                          </div>
                         </div>
                       </div>
-                      <div className="item">
-                        <span className="label-item">Casado?</span>
-                        <div className="checkbox">
-                          <Check size={20} strokeWidth={4} color="green"/>
-                        </div>
-                      </div>
-                      <div className="item">
-                        <span className="label-item">Filhos?</span>
-                        <div className="checkbox">
-                          <X size={20} strokeWidth={4} color="red"/>
+                      <p className="observacoes">
+                        <b>Observações:</b> Lorem ipsum dolor sit amet
+                        consectetur adipisicing elit.
+                      </p>
+                    </div>
+                    <div className="historico">
+                      <h4>Histórico de contato</h4>
+                      <div className="contatos">
+                        <div className="item-contato">
+                          <div className="topo-contato">
+                            <Phone size={20} />
+                            <span className="data-contato">01/08/2026</span>
+                            <span className="resultado-contato">
+                              · Agendou visita
+                            </span>
+                            <span className="status-interesse">
+                              Muito interessado
+                            </span>
+                          </div>
+                          <p className="feedback-contato">
+                            Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit.
+                          </p>
                         </div>
                       </div>
                     </div>
-                    <p className="observacoes">
-                      <b>Observações:</b> Lorem ipsum dolor sit amet consectetur
-                      adipisicing elit.
-                    </p>
-                  </div>
-                  <div className="historico">
-                    <h4>Histórico de contato</h4>
-                    <div className="contatos">
-                      <div className="item-contato">
-                        <div className="topo-contato">
-                          <Phone size={20} />
-                          <span className="data-contato">01/08/2026</span>
-                          <span className="resultado-contato">
-                            · Agendou visita
-                          </span>
-                          <span className="status-interesse">
-                            Muito interessado
-                          </span>
-                        </div>
-                        <p className="feedback-contato">
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit.
-                        </p>
-                      </div>
-                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
+        <ClientModal
+          open={isModalOpen}
+          onOk={() => {
+            setIsModalOpen(false);
+          }}
+          onCancel={() => {
+            setIsModalOpen(false);
+          }}
+          isEditMode={modalEditMode}
+        />
       </article>
     </>
   );

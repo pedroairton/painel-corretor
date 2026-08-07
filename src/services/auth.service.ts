@@ -10,7 +10,7 @@ export const authService = {
         return response.data
     },
     me: async () => {
-        const response = await apiClient.get("/auth/show");
+        const response = await apiClient.get("/user");
         return response.data
     },
 }

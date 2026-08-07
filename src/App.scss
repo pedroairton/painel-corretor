@@ -9,12 +9,25 @@ $headingFont: "Fraunces", serif;
   text-decoration: none;
 }
 
-
 article {
   width: 95%;
   margin: 0 auto;
   padding: 2rem 0;
+  animation: abrirsite 2s;
 }
+
+@keyframes abrirsite {
+  from {
+    opacity: 0;
+    transform: translate3d(-20px, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 h1,
 h2 {
   font-family: $headingFont;

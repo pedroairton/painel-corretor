@@ -29,6 +29,7 @@ function App() {
           await authService.me();
         } catch (error: any) {
           if (error.response.status === 401) {
+            console.log("Usuário Não autenticado");
             localStorage.removeItem("auth_token");
             return redirect("/login");
           }

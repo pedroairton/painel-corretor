@@ -1,0 +1,65 @@
+.page-login {
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  form {
+    width: 500px;
+    max-width: 95%;
+    background-color: #143e2e;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    .img-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      h1 {
+        color: white;
+      }
+    }
+    .input {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      label {
+        color: white;
+      }
+      input[type="email"],
+      input[type="password"] {
+        border: solid 1px #ccc;
+        width: 100%;
+        height: 2rem;
+        padding-left: 1rem;
+        border-radius: 5px;
+        color: #08060d;
+        font-size: 1rem;
+        opacity: 0.85;
+        transition: opacity 0.3s ease-in-out;
+        &::placeholder {
+          font-size: 1rem;
+        }
+        &:focus-visible {
+          outline: unset;
+          opacity: 1;
+        }
+      }
+    }
+    button {
+      width: 100%;
+      margin-top: 1rem;
+      background-color: #fff;
+      color: #143e2e;
+      border-radius: 10px;
+      border: unset;
+      height: 2.5rem;
+      font-weight: 600;
+    }
+  }
+}
