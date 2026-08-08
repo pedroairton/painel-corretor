@@ -15,11 +15,11 @@ import {
 import { apiService } from "../../services/api.service";
 import { useEffect, useState } from "react";
 import type { Client } from "../../models/client.model";
-import { ClientModal } from "../modal/ClientModal/ClientModal";
+import ClientModal from "../modal/ClientModal/ClientModal";
 
 export const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalEditMode, setModalEditMode] = useState(false);
+  const [client, setClient] = useState<Client | null>(null);
   const handleStatusChange = (value: string) => {
     console.log(`selected ${value}`);
   };
@@ -57,8 +57,8 @@ export const Home = () => {
           <button
             className="btn-novo-cliente"
             onClick={() => {
-              setModalEditMode(false);
               setIsModalOpen(true);
+              setClient(null);
             }}
           >
             <Plus strokeWidth={1.5} /> Novo Cliente
@@ -170,18 +170,21 @@ export const Home = () => {
                       <h3>{client.name}</h3>
                       <span>{client.phone} · 2 ligações</span>
                     </div>
-                    <span>R$ {client.income.toLocaleString("pt-BR")}</span>
+                    <span>R$ {client.income?.toLocaleString("pt-BR")}</span>
                     <span>{client.interest_status.label}</span>
                     <span>⭐⭐⭐⭐⭐</span>
                     <div className="acoes">
-                      <button className="btn-ligar" onClick={() => {
-                        setModalEditMode(true);
-                        setIsModalOpen(true);
-                      }}>
+                      <button className="btn-ligar">
                         <PhoneCall strokeWidth={1.5} />
                         Contato
                       </button>
-                      <button className="btn-editar">
+                      <button
+                        className="btn-editar"
+                        onClick={() => {
+                          setIsModalOpen(true);
+                          setClient(client);
+                        }}
+                      >
                         <Pencil strokeWidth={1.5} />
                       </button>
                       <button className="btn-excluir">
@@ -253,13 +256,10 @@ export const Home = () => {
         </div>
         <ClientModal
           open={isModalOpen}
-          onOk={() => {
-            setIsModalOpen(false);
-          }}
           onCancel={() => {
             setIsModalOpen(false);
           }}
-          isEditMode={modalEditMode}
+          clientData={client}
         />
       </article>
     </>
