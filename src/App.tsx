@@ -15,6 +15,21 @@ function App() {
     {
       path: "/login",
       element: <Login />,
+      loader: async () => {
+        const token = localStorage.getItem("auth_token");
+        if (token) {
+          try {
+            await authService.me();
+            return redirect("/home");
+          } catch (error: any) {
+            if (error.response.status === 401) {
+              console.log("Usuário Não autenticado");
+              localStorage.removeItem("auth_token");
+            }
+          }
+        }
+        return null;
+      }
     },
     {
       path: "/",

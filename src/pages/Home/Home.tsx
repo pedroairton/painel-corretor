@@ -16,10 +16,14 @@ import { apiService } from "../../services/api.service";
 import { useEffect, useState } from "react";
 import type { Client } from "../../models/client.model";
 import ClientModal from "../modal/ClientModal/ClientModal";
+import type { Contact } from "../../models/contact.model";
+import ContactModal from "../modal/ContactModal/ContactModal";
 
 export const Home = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [client, setClient] = useState<Client | null>(null);
+  const [contact, setContact] = useState<Contact | null>(null);
   const handleStatusChange = (value: string) => {
     console.log(`selected ${value}`);
   };
@@ -28,6 +32,11 @@ export const Home = () => {
   };
 
   const [clients, setClients] = useState([]);
+  const formatarTelefone = (telefone: string) => {
+    return telefone
+      .replace(/\D/g, "")
+      .replace(/(\d{2})(\d{4,5})(\d{4})/, "($1) $2-$3");
+  }
   const loadClients = async (params?: any) => {
     try {
       const response = await apiService.getClients(params);
@@ -57,7 +66,7 @@ export const Home = () => {
           <button
             className="btn-novo-cliente"
             onClick={() => {
-              setIsModalOpen(true);
+              setIsClientModalOpen(true);
               setClient(null);
             }}
           >
@@ -168,20 +177,25 @@ export const Home = () => {
                   <div className="linha">
                     <div className="cliente">
                       <h3>{client.name}</h3>
-                      <span>{client.phone} · 2 ligações</span>
+                      <span>{formatarTelefone(client.phone)} · 2 ligações</span>
                     </div>
                     <span>R$ {client.income?.toLocaleString("pt-BR")}</span>
                     <span>{client.interest_status.label}</span>
                     <span>⭐⭐⭐⭐⭐</span>
                     <div className="acoes">
-                      <button className="btn-ligar">
+                      <button className="btn-ligar"
+                       onClick={() => {
+                         setIsContactModalOpen(true);
+                         setContact(null);
+                         setClient(client);
+                       }} >
                         <PhoneCall strokeWidth={1.5} />
                         Contato
                       </button>
                       <button
                         className="btn-editar"
                         onClick={() => {
-                          setIsModalOpen(true);
+                          setIsClientModalOpen(true);
                           setClient(client);
                         }}
                       >
@@ -255,10 +269,18 @@ export const Home = () => {
           </div>
         </div>
         <ClientModal
-          open={isModalOpen}
+          open={isClientModalOpen}
           onCancel={() => {
-            setIsModalOpen(false);
+            setIsClientModalOpen(false);
           }}
+          clientData={client}
+        />
+        <ContactModal
+          open={isContactModalOpen}
+          onCancel={() => {
+            setIsContactModalOpen(false);
+          }}
+          contactData={contact}
           clientData={client}
         />
       </article>
