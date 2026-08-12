@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import "./ClientModal.scss";
+import { useEffect, useState } from "react";
 import { Form, Input, InputNumber, Modal, Select, Switch } from "antd";
 import type { Client } from "../../../models/client.model";
 import { apiService } from "../../../services/api.service";
@@ -81,6 +82,7 @@ export default function ClientModal({
   clientData,
 }: ClientModalProps) {
   const [form] = Form.useForm<ClientFormValues>();
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   const isEditing = !!clientData;
 
@@ -118,7 +120,7 @@ export default function ClientModal({
     }
   }, [clientData, open, form]);
 
-  const handleFinish = (values: ClientFormValues) => {
+  const handleFinish = async (values: ClientFormValues) => {
     const payload = {
       ...values,
 
@@ -127,19 +129,43 @@ export default function ClientModal({
       income: values.income !== null ? values.income : undefined,
     };
 
-    console.log(payload);
+    // console.log(payload);
+    setConfirmLoading(true);
 
     if (isEditing) {
       // editar
-      if(!clientData?.id) {
+      if (!clientData?.id) {
         alert("Erro ao editar cliente.");
-        return
+        return;
       }
-      apiService.updateClient(clientData?.id, payload);
+      try {
+        const response = await apiService.updateClient(clientData?.id, payload);
+        console.log(response);
+        alert("Cliente editado com sucesso.");
+      } catch (error) {
+        console.error("Error ao editar cliente:", error);
+        alert("Erro ao editar cliente.");
+      } finally {
+        setConfirmLoading(false);
+        onCancel();
+      }
     } else {
       // cadastrar
-      apiService.createClient(payload);
+      try {
+        const response = await apiService.createClient(payload);
+        console.log(response);
+        alert("Cliente cadastrado com sucesso.");
+      } catch (error) {
+        console.error("Error ao cadastrar cliente:", error);
+        alert("Erro ao cadastrar cliente.");
+      } finally {
+        setConfirmLoading(false);
+        onCancel();
+      }
     }
+
+    // setConfirmLoading(false);
+    // onCancel();
   };
 
   const handleCancel = () => {
@@ -152,219 +178,250 @@ export default function ClientModal({
       title={isEditing ? "Editar Cliente" : "Novo Cliente"}
       open={open}
       onCancel={handleCancel}
-      onOk={() => form.submit()}
+      onOk={() => {
+        form.submit();
+      }}
+      confirmLoading={confirmLoading}
       okText={isEditing ? "Salvar" : "Cadastrar"}
       cancelText="Cancelar"
+      width={{
+        xs: "90%",
+        sm: "80%",
+        md: "70%",
+        lg: "60%",
+        xl: "50%",
+        xxl: "40%",
+      }}
       destroyOnHidden
     >
       <Form
         form={form}
         layout="vertical"
         onFinish={handleFinish}
-        requiredMark={false}
+        requiredMark={true}
       >
-        <Form.Item
-          label="Nome"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Informe o nome do cliente.",
-            },
-          ]}
-        >
-          <Input placeholder="Nome" />
-        </Form.Item>
+        <div className="grid">
+          <Form.Item
+            style={{ marginBottom: 0 }}
+            label="Nome"
+            name="name"
+            rules={[
+              {
+                required: true,
+                message: "Informe o nome do cliente.",
+              },
+            ]}
+          >
+            <Input placeholder="Nome" />
+          </Form.Item>
+          <Form.Item
+            style={{ marginBottom: 0 }}
+            label="Telefone"
+            name="phone"
+            rules={[
+              {
+                required: true,
+                message: "Informe o telefone.",
+              },
+            ]}
+          >
+            <Input
+              placeholder="(99) 99999-9999"
+              maxLength={15}
+              onChange={(event) => {
+                const formatted = formatPhone(event.target.value);
+
+                form.setFieldValue("phone", formatted);
+              }}
+            />
+          </Form.Item>
+        </div>
+        <div className="grid">
+          <Form.Item
+            style={{ marginBottom: 0 }}
+            label="E-mail"
+            name="email"
+            rules={[
+              {
+                type: "email",
+                message: "Informe um e-mail válido.",
+              },
+            ]}
+          >
+            <Input type="email" placeholder="email@exemplo.com" />
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: 0 }} label="Renda" name="income">
+            <InputNumber
+              style={{ width: "100%" }}
+              prefix="R$"
+              placeholder="0,00"
+              min={0}
+              precision={2}
+              decimalSeparator=","
+              formatter={(value) => {
+                if (value === undefined || value === null) {
+                  return "";
+                }
+
+                return formatCurrency(value);
+              }}
+              parser={(displayValue: string | undefined) => {
+                const value = parseCurrency(displayValue);
+                return value ?? 0;
+              }}
+            />
+          </Form.Item>
+        </div>
+        <div className="grid">
+          <Form.Item
+            style={{ marginBottom: 0 }}
+            label="Data de nascimento"
+            name="birth_date"
+          >
+            <Input type="date" />
+          </Form.Item>
+          <Form.Item
+            style={{ marginBottom: 0 }}
+            label="Possui imóvel?"
+            name="has_property"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+        </div>
 
         <Form.Item
-          label="Telefone"
-          name="phone"
-          rules={[
-            {
-              required: true,
-              message: "Informe o telefone.",
-            },
-          ]}
+          style={{ marginBottom: 0 }}
+          label="Necessidades"
+          name="needs"
         >
-          <Input
-            placeholder="(99) 99999-9999"
-            maxLength={15}
-            onChange={(event) => {
-              const formatted = formatPhone(event.target.value);
-
-              form.setFieldValue("phone", formatted);
-            }}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label="E-mail"
-          name="email"
-          rules={[
-            {
-              type: "email",
-              message: "Informe um e-mail válido.",
-            },
-          ]}
-        >
-          <Input type="email" placeholder="email@exemplo.com" />
-        </Form.Item>
-
-        <Form.Item label="Renda" name="income">
-          <InputNumber
-            style={{ width: "100%" }}
-            prefix="R$"
-            placeholder="0,00"
-            min={0}
-            precision={2}
-            decimalSeparator=","
-            formatter={(value) => {
-              if (
-                value === undefined ||
-                value === null
-              ) {
-                return "";
-              }
-
-              return formatCurrency(value);
-            }}
-            parser={(displayValue: string | undefined) => {
-              const value = parseCurrency(displayValue);
-              return value ?? 0;
-            }}
-          />
-        </Form.Item>
-
-        <Form.Item label="Data de nascimento" name="birth_date">
-          <Input type="date" />
-        </Form.Item>
-
-        <Form.Item label="Necessidades" name="needs">
           <Input.TextArea
             placeholder="Descreva as necessidades do cliente"
             rows={3}
           />
         </Form.Item>
+        <div className="grid">
+          <Form.Item
+            style={{ marginBottom: 0 }}
+            label="Estado civil"
+            name="marital_status"
+          >
+            <Select
+              placeholder="Selecione o estado civil"
+              allowClear
+              options={[
+                {
+                  label: "Solteiro",
+                  value: "single",
+                },
+                {
+                  label: "Casado",
+                  value: "married",
+                },
+                {
+                  label: "Divorciado",
+                  value: "divorced",
+                },
+                {
+                  label: "Viúvo",
+                  value: "widowed",
+                },
+                {
+                  label: "União Estável",
+                  value: "stable_union",
+                },
+              ]}
+            />
+          </Form.Item>
 
-        <Form.Item
-          label="Possui imóvel?"
-          name="has_property"
-          valuePropName="checked"
-        >
-          <Switch />
-        </Form.Item>
-
-        <Form.Item label="Estado civil" name="marital_status">
-          <Select
-            placeholder="Selecione o estado civil"
-            allowClear
-            options={[
+          <Form.Item
+            style={{ marginBottom: 0 }}
+            label="Possui filhos?"
+            name="has_children"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+        </div>
+        <div className="grid">
+          <Form.Item
+            style={{ marginBottom: 0 }}
+            label="Status de interesse"
+            name="interest_status"
+            rules={[
               {
-                label: "Solteiro",
-                value: "single",
-              },
-              {
-                label: "Casado",
-                value: "married",
-              },
-              {
-                label: "Divorciado",
-                value: "divorced",
-              },
-              {
-                label: "Viúvo",
-                value: "widowed",
-              },
-              {
-                label: "União Estável",
-                value: "stable_union",
-              }
-            ]}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label="Possui filhos?"
-          name="has_children"
-          valuePropName="checked"
-        >
-          <Switch />
-        </Form.Item>
-
-        <Form.Item
-          label="Status de interesse"
-          name="interest_status"
-          rules={[
-            {
-              required: true,
-              message: "Selecione o status de interesse.",
-            },
-          ]}
-        >
-          <Select
-            placeholder="Selecione o status"
-            options={[
-              {
-                label: "Muito interessado",
-                value: "very_interested",
-              },
-              {
-                label: "Interesse moderado",
-                value: "moderated_interest",
-              },
-              {
-                label: "Pouco interesse",
-                value: "low_interest",
-              },
-              {
-                label: "Sem interesse",
-                value: "no_interest",
-              },
-              {
-                label: "Negócio fechado",
-                value: "closed_deal",
+                required: true,
+                message: "Selecione o status de interesse.",
               },
             ]}
-          />
-        </Form.Item>
+          >
+            <Select
+              placeholder="Selecione o status"
+              options={[
+                {
+                  label: "Muito interessado",
+                  value: "very_interested",
+                },
+                {
+                  label: "Interesse moderado",
+                  value: "moderated_interest",
+                },
+                {
+                  label: "Pouco interesse",
+                  value: "low_interest",
+                },
+                {
+                  label: "Sem interesse",
+                  value: "no_interest",
+                },
+                {
+                  label: "Negócio fechado",
+                  value: "closed_deal",
+                },
+              ]}
+            />
+          </Form.Item>
 
-        <Form.Item
-          label="Prioridade"
-          name="priority"
-          rules={[
-            {
-              required: true,
-              message: "Informe a prioridade.",
-            },
-          ]}
-        >
-          <Select
-            options={[
+          <Form.Item
+            style={{ marginBottom: 0 }}
+            label="Prioridade"
+            name="priority"
+            rules={[
               {
-                label: "⭐",
-                value: 1,
-              },
-              {
-                label: "⭐⭐",
-                value: 2,
-              },
-              {
-                label: "⭐⭐⭐",
-                value: 3,
-              },
-              {
-                label: "⭐⭐⭐⭐",
-                value: 4,
-              },
-              {
-                label: "⭐⭐⭐⭐⭐",
-                value: 5,
+                required: true,
+                message: "Informe a prioridade.",
               },
             ]}
-          />
-        </Form.Item>
+          >
+            <Select
+              options={[
+                {
+                  label: "⭐",
+                  value: 1,
+                },
+                {
+                  label: "⭐⭐",
+                  value: 2,
+                },
+                {
+                  label: "⭐⭐⭐",
+                  value: 3,
+                },
+                {
+                  label: "⭐⭐⭐⭐",
+                  value: 4,
+                },
+                {
+                  label: "⭐⭐⭐⭐⭐",
+                  value: 5,
+                },
+              ]}
+            />
+          </Form.Item>
+        </div>
 
-        <Form.Item label="Observações" name="notes">
+        <Form.Item style={{ marginBottom: 0 }} label="Observações" name="notes">
           <Input.TextArea placeholder="Observações adicionais" rows={4} />
         </Form.Item>
       </Form>

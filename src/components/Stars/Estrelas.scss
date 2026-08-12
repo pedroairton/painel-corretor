@@ -1,0 +1,20 @@
+.estrelas {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .estrela {
+    width: 20px;
+    height: 20px;
+    color: #d1d5db; // cinza
+    transition: 0.3s;
+    cursor: pointer;
+    &.preenchida {
+      color: #fbbf24; // dourado
+      fill: #fbbf24;
+    }
+    &:hover {
+      scale: 1.2;
+    }
+  }
+}

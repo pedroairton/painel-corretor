@@ -1,9 +1,11 @@
+import "./ContactModal.scss";
 import { Form, Input, Modal, Select } from "antd";
 import type { Contact } from "../../../models/contact.model";
 import "./ContactModal.scss";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { apiService } from "../../../services/api.service";
 import type { Client } from "../../../models/client.model";
+import { examples } from "../../../utils/feedback-examples";
 
 interface ContactModalProps {
   open: boolean;
@@ -25,6 +27,7 @@ export default function ContactModal({
   clientData,
 }: ContactModalProps) {
   const [form] = Form.useForm<ContactFormValues>();
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   const isEditing = !!contactData;
 
@@ -52,13 +55,14 @@ export default function ContactModal({
     }
   }, [open, contactData]);
 
-  const handleFinish = (values: ContactFormValues) => {
+  const handleFinish = async (values: ContactFormValues) => {
     const payload = {
       ...values,
     };
-    if(!clientData?.id) {
-        alert("Cliente não encontrado.");
-        return
+    setConfirmLoading(true);
+    if (!clientData?.id) {
+      alert("Cliente não encontrado.");
+      return;
     }
     if (isEditing) {
       // editar
@@ -66,10 +70,36 @@ export default function ContactModal({
         alert("Erro ao editar contato.");
         return;
       }
-      apiService.updateContact(clientData?.id, payload);
+      try {
+        const response = await apiService.updateContact(
+          clientData?.id,
+          payload,
+        );
+        console.log(response);
+        alert("Contato editado com sucesso.");
+      } catch (error) {
+        console.error("Error ao editar contato:", error);
+        alert("Erro ao editar contato.");
+      } finally {
+        setConfirmLoading(false);
+        onCancel();
+      }
     } else {
       // cadastrar
-      apiService.createContact(clientData?.id, payload);
+      try {
+        const response = await apiService.createContact(
+          clientData?.id,
+          payload,
+        );
+        console.log(response);
+        alert("Contato cadastrado com sucesso.");
+      } catch (error) {
+        console.error("Error ao cadastrar contato:", error);
+        alert("Erro ao cadastrar contato.");
+      } finally {
+        setConfirmLoading(false);
+        onCancel();
+      }
     }
   };
 
@@ -84,6 +114,7 @@ export default function ContactModal({
       onCancel={handleCancel}
       onOk={() => form.submit()}
       okText={isEditing ? "Salvar" : "Cadastrar"}
+      confirmLoading={confirmLoading}
       cancelText="Cancelar"
       destroyOnHidden
     >
@@ -94,6 +125,7 @@ export default function ContactModal({
         requiredMark={false}
       >
         <Form.Item
+          style={{ marginBottom: 0 }}
           label="Tipo de Contato"
           name="contact_type"
           rules={[
@@ -131,6 +163,7 @@ export default function ContactModal({
           ></Select>
         </Form.Item>
         <Form.Item
+          style={{ marginBottom: 0 }}
           label="Data do Contato"
           name="contact_date"
           rules={[
@@ -143,6 +176,7 @@ export default function ContactModal({
           <Input type="date" />
         </Form.Item>
         <Form.Item
+          style={{ marginBottom: 0 }}
           label="Resultado do Contato"
           name="result"
           rules={[
@@ -156,33 +190,45 @@ export default function ContactModal({
             placeholder="Selecione um resultado"
             allowClear
             options={[
-                {
-                    label: "answered",
-                    value: "Atenteu"
-                },
-                {
-                    label: "not_answered",
-                    value: "Não Atenteu"
-                },
-                {
-                    label: "call_later",
-                    value: "Retornar depois"
-                },
-                {
-                    label: "visit_scheduled",
-                    value: "Visita Agendada"
-                },
-                {
-                    label: "closed_deal",
-                    value: "Negócio fechado"
-                }
+              {
+                value: "answered",
+                label: "Atenteu",
+              },
+              {
+                value: "not_answered",
+                label: "Não Atenteu",
+              },
+              {
+                value: "call_later",
+                label: "Retornar depois",
+              },
+              {
+                value: "visit_scheduled",
+                label: "Visita Agendada",
+              },
+              {
+                value: "closed_deal",
+                label: "Negócio fechado",
+              },
             ]}
           ></Select>
         </Form.Item>
-        <Form.Item label="Feedback" name="feedback">
+        <Form.Item style={{ marginBottom: 0 }} label="Feedback" name="feedback">
           <Input.TextArea />
         </Form.Item>
+        <div className="exemplos">
+          {examples.map((example: string, index: number) => (
+            <div
+              key={index}
+              className="exemplo"
+              onClick={() => form.setFieldValue("feedback", example)}
+            >
+              <p>{example}</p>
+            </div>
+          ))}
+        </div>
         <Form.Item
+          style={{ marginBottom: 0 }}
           label="Status do Interesse"
           name="interest_status_after"
           rules={[

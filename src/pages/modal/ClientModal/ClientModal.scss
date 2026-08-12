@@ -23,6 +23,11 @@ form {
     //   opacity: 1;
     }
   }
+  .grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
   textarea{
     height: auto;
     resize: none;

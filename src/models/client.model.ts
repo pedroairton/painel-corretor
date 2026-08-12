@@ -1,3 +1,5 @@
+import type { Contact } from "./contact.model";
+
 export interface Client{
     id: number;
     name: string;
@@ -14,7 +16,9 @@ export interface Client{
         value: string;
         label: string;
     }
+    contacts_count: number;
     last_contact?: string;
+    contacts?: Contact[];
     priority: string | number;
     created_at: string;
 }

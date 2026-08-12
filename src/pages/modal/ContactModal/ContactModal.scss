@@ -1,0 +1,20 @@
+.exemplos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  .exemplo {
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 3px 15px;
+    border-radius: 15px;
+    border: solid 1px #ccc;
+    background-color: #f0f0f0;
+    color: #6b6375;
+    cursor: default;
+    transition: .3s;
+    &:hover{
+      background-color: #143e2e;
+      color: white;
+    }
+  }
+}

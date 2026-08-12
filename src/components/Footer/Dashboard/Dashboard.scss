@@ -1,0 +1,21 @@
+.cards {
+    width: 100%;
+    display: flex;
+    gap: 1rem;
+    .card {
+      flex: 1;
+      background: white;
+      padding: 1rem;
+      border-radius: 15px;
+      box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+      .valor {
+        font-size: 2rem;
+        font-weight: 500;
+        color: #08060d;
+      }
+      .label {
+        color: #6b6375;
+        font-size: 0.875rem;
+      }
+    }
+  }
