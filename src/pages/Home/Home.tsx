@@ -38,6 +38,7 @@ export const Home = () => {
   });
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [loading, setLoading] = useState('');
   const [accordion, setAccordion] = useState<number | null>(null);
   const [client, setClient] = useState<Client | null>(null);
   const [contact, setContact] = useState<Contact | null>(null);
@@ -77,15 +78,19 @@ export const Home = () => {
       .replace(/(\d{2})(\d{4,5})(\d{4})/, "($1) $2-$3");
   };
   const loadClients = async (params?: any) => {
+    setAccordion(null);
+    setLoading('clients');
     try {
       const response = await apiService.getClients(params);
       console.log(response);
       setClients(response.data);
+      setLoading('');
     } catch (error) {
       console.error(error);
     }
   };
   const loadContacts = async (params?: any) => {
+    setLoading('contacts');
     try {
       const response = await apiService.getClientContacts(params);
       console.log(response);
