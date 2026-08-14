@@ -9,6 +9,7 @@ import { Home } from "./pages/Home/Home";
 import { Login } from "./pages/Login/Login";
 import { Layout } from "./components/Layout/Layout";
 import { authService } from "./services/auth.service";
+import Erro from "./pages/Erro/Erro";
 
 function App() {
   const router = createBrowserRouter([
@@ -22,7 +23,7 @@ function App() {
             await authService.me();
             return redirect("/home");
           } catch (error: any) {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
               console.log("Usuário Não autenticado");
               localStorage.removeItem("auth_token");
             }
@@ -35,7 +36,6 @@ function App() {
       path: "/",
       element: <Layout />,
       loader: async () => {
-        // temporario
         const token = localStorage.getItem("auth_token");
         if (!token) {
           return redirect("/login");
@@ -43,10 +43,12 @@ function App() {
         try {
           await authService.me();
         } catch (error: any) {
-          if (error.response.status === 401) {
+          if (error.response && error.response.status === 401) {
             console.log("Usuário Não autenticado");
             localStorage.removeItem("auth_token");
             return redirect("/login");
+          } else if (!error.response || error.response.status === 500) {
+            return redirect("/erro");
           }
         }
         return null;
@@ -60,6 +62,14 @@ function App() {
           path: "/home",
           element: <Home></Home>,
         },
+        {
+          path: "*",
+          element: <Navigate to="/home" replace={true}></Navigate>,
+        },
+        {
+          path: "/erro",
+          element: <Erro/>
+        }
       ],
     },
   ]);

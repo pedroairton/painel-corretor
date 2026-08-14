@@ -23,6 +23,7 @@ import ContactModal from "../modal/ContactModal/ContactModal";
 import { maritalStatus } from "../../utils/marital-status";
 import { Estrelas } from "../../components/Stars/Estrelas";
 import Dashboard from "../../components/Footer/Dashboard/Dashboard";
+import Loading from "../../components/Loading/Loading";
 
 interface ClientFilter {
   search: string;
@@ -38,7 +39,7 @@ export const Home = () => {
   });
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [loading, setLoading] = useState('');
+  const [loading, setLoading] = useState("");
   const [accordion, setAccordion] = useState<number | null>(null);
   const [client, setClient] = useState<Client | null>(null);
   const [contact, setContact] = useState<Contact | null>(null);
@@ -79,29 +80,33 @@ export const Home = () => {
   };
   const loadClients = async (params?: any) => {
     setAccordion(null);
-    setLoading('clients');
+    setLoading("clients");
     try {
       const response = await apiService.getClients(params);
       console.log(response);
       setClients(response.data);
-      setLoading('');
+      setLoading("");
     } catch (error) {
       console.error(error);
+      alert("Erro ao carregar clientes.");
+      setLoading("");
     }
   };
   const loadContacts = async (params?: any) => {
-    setLoading('contacts');
+    setLoading("contacts");
     try {
       const response = await apiService.getClientContacts(params);
       console.log(response);
       setSelectedClient(response.data);
+      setLoading("");
     } catch (error) {
       console.error(error);
       alert("Erro ao carregar contatos desse cliente.");
+      setLoading("");
     }
   };
   const deleteClient = async (id: number) => {
-    if(!confirm("Tem certeza que deseja excluir esse cliente?")) return
+    if (!confirm("Tem certeza que deseja excluir esse cliente?")) return;
     try {
       await apiService.deleteClient(id);
       alert("Cliente excluido com sucesso.");
@@ -220,7 +225,226 @@ export const Home = () => {
           </div>
         </div>
         <div className="tabela">
-          {clients.length > 0 ? (
+          {loading === "clients" ? (
+            <Loading />
+          ) : clients.length > 0 ? (
+            <div className="grid">
+              <div className="topo-grid">
+                <div className="linha">
+                  <span>Cliente</span>
+                  <span>Renda</span>
+                  <span>Status</span>
+                  <span>Prioridade</span>
+                  <span>Ações</span>
+                </div>
+              </div>
+              <div className="itens-grid">
+                {clients.map((client: Client) => (
+                  <div className="item-grid" key={client.id}>
+                    <div className="linha">
+                      <div className="cliente">
+                        <h3>{client.name}</h3>
+                        <span
+                          className={
+                            client.contacts_count === 0 ? "sem-contato" : ""
+                          }
+                        >
+                          {formatarTelefone(client.phone)} ·{" "}
+                          {client.contacts_count} contato(s)
+                        </span>
+                      </div>
+                      <span>R$ {client.income?.toLocaleString("pt-BR")}</span>
+                      <span
+                        className={`status ${client.interest_status.value}`}
+                      >
+                        • {client.interest_status.label}
+                      </span>
+                      <Estrelas
+                        clientId={client.id}
+                        num={Number(client.priority)}
+                      />
+                      <div className="acoes">
+                        <button
+                          className="btn-ligar"
+                          onClick={() => {
+                            setIsContactModalOpen(true);
+                            setContact(null);
+                            setClient(client);
+                          }}
+                        >
+                          <PhoneCall strokeWidth={1.5} />
+                          Contato
+                        </button>
+                        <button
+                          className="btn-editar"
+                          onClick={() => {
+                            setIsClientModalOpen(true);
+                            setClient(client);
+                          }}
+                        >
+                          <Pencil strokeWidth={1.5} />
+                        </button>
+                        <button
+                          className="btn-excluir"
+                          onClick={() => deleteClient(client.id)}
+                        >
+                          <Trash strokeWidth={1.5} />
+                        </button>
+                        <button
+                          className="detalhes"
+                          aria-label="Expand"
+                          onClick={() => {
+                            if (accordion === client.id) setAccordion(null);
+                            else {
+                              setAccordion(client.id);
+                              loadContacts(client.id);
+                            }
+                          }}
+                        >
+                          {accordion === client.id ? (
+                            <ChevronUp strokeWidth={1.5} />
+                          ) : (
+                            <ChevronDown strokeWidth={1.5} />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    {accordion === client.id ? (
+                      <div className="linha-detalhes">
+                        <div className="outras-infos">
+                          <h4>Outras informações</h4>
+                          <p className="necessidades">
+                            <b>Necessidades:</b> {client.needs}
+                          </p>
+                          <div className="itens">
+                            <div className="item">
+                              <span className="label-item">Estado civil</span>
+                              <div className="checkbox">
+                                {maritalStatus(client.marital_status as string)}
+                              </div>
+                            </div>
+                            <div className="item">
+                              <span className="label-item">Filhos?</span>
+                              <div className="checkbox">
+                                {client.has_children ? (
+                                  <Check
+                                    size={20}
+                                    strokeWidth={4}
+                                    color="green"
+                                  />
+                                ) : (
+                                  <X size={20} strokeWidth={4} color="red" />
+                                )}
+                              </div>
+                            </div>
+                            <div className="item">
+                              <span className="label-item">Imóvel?</span>
+                              <div className="checkbox">
+                                {client.has_property ? (
+                                  <Check
+                                    size={20}
+                                    strokeWidth={4}
+                                    color="green"
+                                  />
+                                ) : (
+                                  <X size={20} strokeWidth={4} color="red" />
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <p className="observacoes">
+                            <b>Observações:</b> {client.notes}
+                          </p>
+                        </div>
+                        <div className="historico">
+                          <h4>Histórico de contato</h4>
+                          <div className="contatos">
+                            {loading === "contacts" ? (
+                              <Loading />
+                            ) : selectedClient?.contacts ? (
+                              selectedClient.contacts.map(
+                                (contact: Contact) => (
+                                  <div
+                                    className="item-contato"
+                                    key={contact.id}
+                                  >
+                                    <div className="topo-contato">
+                                      <Phone size={20} />
+                                      <span className="data-contato">
+                                        {contact.contact_date
+                                          .split("T")[0]
+                                          .split("-")
+                                          .reverse()
+                                          .join("/")}
+                                      </span>
+                                      <span className="resultado-contato">
+                                        · {contact.result.label}
+                                      </span>
+                                      <span
+                                        className={`status-interesse ${contact.interest_status_after.value}`}
+                                      >
+                                        • {contact.interest_status_after.label}
+                                      </span>
+                                    </div>
+                                    <p className="feedback-contato">
+                                      {contact.feedback}
+                                    </p>
+                                  </div>
+                                ),
+                              )
+                            ) : (
+                              <>
+                                <h2>Nenhum contato registrado</h2>
+                              </>
+                            )}
+                            {/* {selectedClient?.contacts ? (
+                              selectedClient.contacts.map(
+                                (contact: Contact) => (
+                                  <div
+                                    className="item-contato"
+                                    key={contact.id}
+                                  >
+                                    <div className="topo-contato">
+                                      <Phone size={20} />
+                                      <span className="data-contato">
+                                        {contact.contact_date
+                                          .split("T")[0]
+                                          .split("-")
+                                          .reverse()
+                                          .join("/")}
+                                      </span>
+                                      <span className="resultado-contato">
+                                        · {contact.result.label}
+                                      </span>
+                                      <span
+                                        className={`status-interesse ${contact.interest_status_after.value}`}
+                                      >
+                                        • {contact.interest_status_after.label}
+                                      </span>
+                                    </div>
+                                    <p className="feedback-contato">
+                                      {contact.feedback}
+                                    </p>
+                                  </div>
+                                ),
+                              )
+                            ) : (
+                              <>
+                                <h2>Nenhum contato registrado</h2>
+                              </>
+                            )} */}
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <h2 style={{ textAlign: "center" }}>Nenhum cliente encontrado</h2>
+          )}
+          {/* {clients.length > 0 ? (
             <div className="grid">
               <div className="topo-grid">
                 <div className="linha">
@@ -394,7 +618,7 @@ export const Home = () => {
             </div>
           ) : (
             <h2 style={{ textAlign: "center" }}>Nenhum cliente encontrado</h2>
-          )}
+          )} */}
         </div>
         <ClientModal
           open={isClientModalOpen}
