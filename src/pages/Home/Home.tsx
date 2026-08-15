@@ -275,38 +275,40 @@ export const Home = () => {
                           <PhoneCall strokeWidth={1.5} />
                           Contato
                         </button>
-                        <button
-                          className="btn-editar"
-                          onClick={() => {
-                            setIsClientModalOpen(true);
-                            setClient(client);
-                          }}
-                        >
-                          <Pencil strokeWidth={1.5} />
-                        </button>
-                        <button
-                          className="btn-excluir"
-                          onClick={() => deleteClient(client.id)}
-                        >
-                          <Trash strokeWidth={1.5} />
-                        </button>
-                        <button
-                          className="detalhes"
-                          aria-label="Expand"
-                          onClick={() => {
-                            if (accordion === client.id) setAccordion(null);
-                            else {
-                              setAccordion(client.id);
-                              loadContacts(client.id);
-                            }
-                          }}
-                        >
-                          {accordion === client.id ? (
-                            <ChevronUp strokeWidth={1.5} />
-                          ) : (
-                            <ChevronDown strokeWidth={1.5} />
-                          )}
-                        </button>
+                        <div className="grupo-btns">
+                          <button
+                            className="btn-editar"
+                            onClick={() => {
+                              setIsClientModalOpen(true);
+                              setClient(client);
+                            }}
+                          >
+                            <Pencil strokeWidth={1.5} />
+                          </button>
+                          <button
+                            className="btn-excluir"
+                            onClick={() => deleteClient(client.id)}
+                          >
+                            <Trash strokeWidth={1.5} />
+                          </button>
+                          <button
+                            className="detalhes"
+                            aria-label="Expand"
+                            onClick={() => {
+                              if (accordion === client.id) setAccordion(null);
+                              else {
+                                setAccordion(client.id);
+                                loadContacts(client.id);
+                              }
+                            }}
+                          >
+                            {accordion === client.id ? (
+                              <ChevronUp strokeWidth={1.5} />
+                            ) : (
+                              <ChevronDown strokeWidth={1.5} />
+                            )}
+                          </button>
+                        </div>
                       </div>
                     </div>
                     {accordion === client.id ? (

@@ -1,13 +1,18 @@
-import { Building, Building2, LayoutDashboard, Snowflake } from "lucide-react";
+import { Building, Building2, LayoutDashboard, Menu, Snowflake } from "lucide-react";
 import "./Header.scss";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 export const Header = () => {
+  const [isMobile, setIsMobile] = useState(false);
   return (
     <>
-      <header className="header">
+      <header className={"header"+(isMobile ? " ativo" : "")}>
         <div className="img-logo">
           <Building size={96} color="white" />
+        </div>
+        <div className="mobile">
+          <Menu size={32} color="white" onClick={() => setIsMobile(!isMobile)} />
         </div>
         <nav className="nav">
           <Link to="/home">

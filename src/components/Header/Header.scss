@@ -11,6 +11,9 @@
   align-items: center;
   gap: 50px;
   padding: 20px 0;
+  .mobile{
+    display: none;
+  }
   .nav {
     width: 100%;
     display: flex;
@@ -39,6 +42,44 @@
         cursor: not-allowed;
         opacity: 0.5;
         pointer-events: none;
+    }
+  }
+}
+
+@media (max-width: 1368px){
+  .header{
+    width: 150px;
+  }
+}
+
+@media (max-width: 1024px){
+  .header{
+    translate: -100% 0;
+    transition: .3s;
+    &.ativo{
+      translate: 0 0;
+      .mobile{
+        svg{
+          rotate: 90deg;
+        }
+      }
+    }
+    .mobile{
+      display: block;
+      background-color: #143e2e;
+      position: absolute;
+      top: 10%;
+      right: -48px;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 0 5px 5px 0;
+      svg{
+        transition: .3s;
+      }
     }
   }
 }

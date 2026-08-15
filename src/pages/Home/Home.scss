@@ -262,7 +262,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 2rem;
+            gap: 1rem;
             .btn-ligar {
               background: #143e2e;
               color: white;
@@ -273,12 +273,33 @@
               align-items: center;
               gap: 0.5rem;
             }
+            .grupo-btns{
+              display: flex;
+              align-items: center;
+              gap: 1rem;
+            }
             .btn-editar,
             .btn-excluir {
               transition: 0.3s;
               &:hover {
                 scale: 1.1;
               }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media(max-width: 1368px){
+  .page-home{
+    .tabela{
+      .grid{
+        .itens-grid{
+          .linha{
+            .acoes{
+              flex-direction: column;
             }
           }
         }
