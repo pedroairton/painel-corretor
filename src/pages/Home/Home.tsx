@@ -145,83 +145,87 @@ export const Home = () => {
         </div>
         <Dashboard />
         <div className="filtros">
-          <button
-            className="btn-reset"
-            onClick={() => {
-              setFilter({ search: "", status: "", sort: "priority" });
-              loadClients();
-            }}
-          >
-            <RotateCcw />
-          </button>
-          <div className="input">
-            <Search strokeWidth={1.5} />
-            <input
-              type="text"
-              name="busca"
-              id="busca"
-              placeholder="Buscar por nome ou telefone"
-              value={filter.search}
-              onInput={(e) => handleSearchChange(e.currentTarget.value)}
-            />
+          <div className="busca">
+            <button
+              className="btn-reset"
+              onClick={() => {
+                setFilter({ search: "", status: "", sort: "priority" });
+                loadClients();
+              }}
+            >
+              <RotateCcw />
+            </button>
+            <div className="input">
+              <Search strokeWidth={1.5} />
+              <input
+                type="text"
+                name="busca"
+                id="busca"
+                placeholder="Buscar por nome ou telefone"
+                value={filter.search}
+                onInput={(e) => handleSearchChange(e.currentTarget.value)}
+              />
+            </div>
           </div>
-          <div className="select">
-            <Select
-              className="select-item"
-              value={filter.status}
-              onChange={handleStatusChange}
-              options={[
-                {
-                  value: "",
-                  label: "Todos os status",
-                },
-                {
-                  value: "very_interested",
-                  label: "Muito interessados",
-                },
-                {
-                  value: "moderated_interest",
-                  label: "Interesse moderado",
-                },
-                {
-                  value: "low_interest",
-                  label: "Pouco interessados",
-                },
-                {
-                  value: "no_interest",
-                  label: "Sem interesse",
-                },
-                {
-                  value: "closed_deal",
-                  label: "Negócios fechados",
-                },
-              ]}
-            ></Select>
-          </div>
-          <div className="select">
-            <Select
-              className="select-item"
-              value={filter.sort}
-              onChange={handleOrdemChange}
-              options={[
-                {
-                  value: "priority",
-                  label: "Ordernar: Prioridade",
-                },
-                {
-                  value: "interest",
-                  label: "Ordernar: Nível de interesse",
-                },
-                {
-                  value: "recent",
-                  label: "Ordernar: Mais recentes",
-                },
-                {
-                  value: "name",
-                  label: "Ordernar: Nome (A-Z)",
-                },
-              ]}
-            ></Select>
+          <div className="selects">
+            <div className="select">
+              <Select
+                className="select-item"
+                value={filter.status}
+                onChange={handleStatusChange}
+                options={[
+                  {
+                    value: "",
+                    label: "Todos os status",
+                  },
+                  {
+                    value: "very_interested",
+                    label: "Muito interessados",
+                  },
+                  {
+                    value: "moderated_interest",
+                    label: "Interesse moderado",
+                  },
+                  {
+                    value: "low_interest",
+                    label: "Pouco interessados",
+                  },
+                  {
+                    value: "no_interest",
+                    label: "Sem interesse",
+                  },
+                  {
+                    value: "closed_deal",
+                    label: "Negócios fechados",
+                  },
+                ]}
+              ></Select>
+            </div>
+            <div className="select">
+              <Select
+                className="select-item"
+                value={filter.sort}
+                onChange={handleOrdemChange}
+                options={[
+                  {
+                    value: "priority",
+                    label: "Ordernar: Prioridade",
+                  },
+                  {
+                    value: "interest",
+                    label: "Ordernar: Nível de interesse",
+                  },
+                  {
+                    value: "recent",
+                    label: "Ordernar: Mais recentes",
+                  },
+                  {
+                    value: "name",
+                    label: "Ordernar: Nome (A-Z)",
+                  },
+                ]}
+              ></Select>
+            </div>
           </div>
         </div>
         <div className="tabela">
