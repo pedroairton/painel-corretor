@@ -9,13 +9,12 @@ export const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    setIsLoading(true);
-
+    
     if (!email || !password) {
       alert("Preencha todos os campos");
       return;
     }
-
+    setIsLoading(true);
     try {
       const response = await authService.login(email, password);
       console.log(response);
@@ -32,6 +31,7 @@ export const Login = () => {
   return (
     <>
       <article className="page-login">
+        {isLoading && <div className="loading">Carregando...</div>}
         <form
           onSubmit={(e) => {
             e.preventDefault();
