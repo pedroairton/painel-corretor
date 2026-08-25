@@ -11,9 +11,9 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("auth_token");
-    if (token) {
+    if (token && window.location.pathname !== "/login") {
       config.headers.Authorization = `Bearer ${token}`;
-    } else {
+    } else if (!token && window.location.pathname !== "/login") {
       window.location.href = "/login";
     }
     return config;
